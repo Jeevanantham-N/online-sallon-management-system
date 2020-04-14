@@ -1,2 +1,2 @@
 # Salon-Spot
-Salons have before registered a account to the account some basic information then users check availability at particular time then book it so ticket issued both the ends so they can verify and enjoy it
+Salons owners have before registered an to the database some basic information then users check availability at particular time if available then they can book at that time and is ticket issued at both the ends so they can verify it by their tickets nos and enjoy it....
