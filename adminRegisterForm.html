@@ -1,0 +1,84 @@
+{% extends "index.html" %}
+
+{% block content %}
+<style>
+  .button1{
+    width:10em;
+    float: left;
+    margin-top: 10%;
+    margin-left: 20%;
+}
+.sticky-top{
+  display: none;
+}
+</style>
+
+<h1 id ="adminhead">Admin Registration</h1>
+
+<script>
+function getLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPosition);
+  } else {
+    x.innerHTML = "Geolocation is not supported by this browser.";
+  }
+}
+
+function showPosition(position) {
+  var latitude = position.coords.latitude;
+  var longitude = position.coords.longitude;
+  document.getElementById("latitude").value = latitude;
+  document.getElementById("longitude").value = longitude;
+}
+
+
+</script>
+<form action="/adminregisterdb" method="POST" id="form">
+<table>
+<tr>
+<td><label for="name" id = "adminform">Name:</label></td>
+<td><input type="text" id="name" placeholder="name" name="name" required><br><br></td>
+</tr>
+<tr>
+<td><label for="phone"  id = "adminform">contact number:</label></td>
+<td>  <input type="tel" id="phone" name="phone" pattern="[0-9]{10}" required><br><br></td>
+</tr>
+<tr>
+<td> <label for="email"  id = "adminform">Email:</label></td>
+<td>  <input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required><br><br></td>
+</tr>
+<tr><td><p style="color: red;">use simple password for easy access</p></td></tr>
+<tr>
+<td><label>Password:</label></td>
+<td> <input type="password" id="pwd" name="pwd" required><br><br></td>
+</tr>
+<tr>
+<td> <label >Repeat Password:</label></td>
+<td> <input type="password" id="repwd" name="repwd"required><br><br></td>
+</tr>
+<tr>
+<td> <label for="username" >Allow Location:</label></td>
+<td> <a id="location"><button  id="location" type="button" onclick="getLocation()" >allow</button></a></td>
+</tr>
+<tr>
+<td> <label for="username" >Latitude:</label></td>
+<td><input type="text" id="latitude" name="latitude" readonly></td>
+</tr>
+<tr>
+<td> <label for="username" >Longitude:</label></td>
+<td> <input type="text" id="longitude" name="longitude" readonly></td>
+</tr>
+<tr>
+<td><label>Seat Count:</label></td>
+<td><input type="number" name ="total" id ="total" min=1 required></td>
+</tr>
+<tr>
+<td></td>
+<td><input type="submit" ></td>
+</tr>
+</table>
+</form>
+
+<p style="color: red;"> {{ error }} </p>
+
+{% endblock content %}

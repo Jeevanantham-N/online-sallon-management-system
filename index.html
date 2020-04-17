@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+		<title>Salon System</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+</head>
+<style>
+	.sticky-top{
+		float: right;
+		margin-top: 0%;
+		margin-right: 10%;
+	}
+
+	#checkbtn{
+		margin-top: 10%;
+	}
+	#table-responsive-xl{
+		margin-top:5%;
+	}
+	#o{
+		display: none;
+	}
+	.navbar-brand{
+		color:green;
+	}
+	#result{
+		color:red;
+	}
+	
+</style>
+<script type=text/javascript>
+/////////////////////////////////////   call python
+			$( document ).ready(function() {
+			$(function() {
+			  $('a#process_input').bind('click', function(global) {
+				$('#p1').css('color', 'black');
+				$('#m11').css('color', 'black');
+				uid = $('input[name="phone"]').val();
+				pwd= $('input[name="pwd"]').val();
+				time = $('input[name="time"]').val();
+				seats= $('input[name="seats"]').val();
+
+
+				if ((phone != "" ) && (pwd != "") && (time != "" ) && (seats != "")){
+				document.getElementById('result').innerHTML = "loading...";
+				$.getJSON('/background_process', {
+				  time: $('input[name="time"]').val(),
+				  seats: $('input[name="seats"]').val(),
+				  uid: $('input[name="phone"]').val(),
+				  pwd: $('input[name="pwd"]').val(),
+
+				}, function(data) {
+				document.getElementById('result').innerHTML = "Results...";
+				var array_ = data.json;
+////////////////////////////////   print table
+				var pars = array_;
+
+				if (pars=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (pars=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+				}
+				$('#p1').css('color', 'black');
+				$('#m1').css('color', 'black');
+				var output = '';
+				output += '<table class="table" border="1" style="float:left; width:30%"><tr><th>no</th><th>details</th><th>book</th><th>cancel</th></tr>';
+				for (var i = 0; i < pars.length; i++)
+				{
+				var lat=JSON.parse(pars[i]['address']['lat']);
+				var lon=JSON.parse(pars[i]['address']['long']);
+				var gmaps = 'https://maps.google.com/?q='+lat+','+lon;
+				//////////////
+				output +='<tr id='+i+' style="cursor:pointer"><td>'+[i+1]+'</td><td>'+pars[i]['name']+
+				',<br>'+pars[i]['mobile']+',<br><a href='+gmaps+' target="_blank">Location</a></td>';
+				//////////////
+				output +='<td><a><button style="float:left; width:100%" id =book'+pars[i]['mobile']+' onclick=booking('+pars[i]['mobile']+')>Book</button></a></td>';
+				//////////////
+				output +='<td><a><button style="float:left; width:100%;display:none" id =cancel'+pars[i]['mobile']+' onclick=cancel('+pars[i]['mobile']+')>cancel</button></a></td></tr>'
+				}
+				output += '</table>';
+				document.getElementById("table-responsive-xl").innerHTML = output;
+//////////////////////////////// end table
+					});
+				return false;
+				}
+			  });
+			});
+		});
+////////////////////////////////// booking
+		  function booking(val){
+			$( document ).ready(function() {
+				document.getElementById('result').innerHTML = "booking...";
+				var book = document.getElementById("book"+val);
+				book.style.display = "none";
+			$.getJSON('/booking', {
+				phone: val,
+				uid: $('input[name="phone"]').val(),
+				time: $('input[name="time"]').val(),
+				seats: $('input[name="seats"]').val(),
+			  }, function(data) {
+					var otp = data.otp;
+					$('#otp').text(otp);
+					document.getElementById("o").style.display = "block";
+				  	var result = data.json;
+				  	document.getElementById('result').innerHTML = result;
+			  });
+			});
+			var cancel = document.getElementById("cancel"+val);
+			cancel.style.display = "block";
+		}
+//////////////////////////////////// cancelling
+			function cancel(val){
+				$( document ).ready(function() {
+					document.getElementById('result').innerHTML = "cancelling...";
+				$.getJSON('/cancelling', {
+					phone: val,
+					uid: $('input[name="phone"]').val(),
+					time: $('input[name="time"]').val(),
+					seats: $('input[name="seats"]').val(),
+					otp : $('#otp').text(),
+				}, function(data) {
+					var result = data.json;
+					document.getElementById('result').innerHTML = result;
+				});
+				});
+				var cancel = document.getElementById("cancel"+val);
+				cancel.style.display = "none";
+				var book = document.getElementById("book"+val);
+				book.style.display = "block";
+			}
+////////////////////////////////////mobile verification
+$( document ).ready(function() {
+	$(function() {
+	  $('#jqpwd').bind('click', function() {
+		$.getJSON('/isvaliddata', {
+			uid: $('input[name="phone"]').val(),
+			pwd: $('input[name="pwd"]').val(),
+		  },
+		  function(data) {
+			var result = data.json;
+			if (result=="1"){
+				$('#p1').css('color', 'red');
+				document.getElementById('result').innerHTML = "Password wrong check it by user details";
+				document.getElementById('phone').value = "";
+				document.getElementById('pwd').value = "";
+				return 0;
+			}
+			else if (result=="0"){
+				$('#m1').css('color', 'red');
+				document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+				document.getElementById('phone').value = "";
+				document.getElementById('pwd').value = "";
+				return 0;
+			}
+			else{
+				document.getElementById('result').innerHTML = "";
+			}
+		  });
+	  });
+	});
+});
+////////////////////////////////////user status check
+$( document ).ready(function() {
+	$(function() {
+	  $('a#userstatus').bind('click', function() {
+		oid = $('input[name="phone"]').val();
+		pwd = $('input[name="pwd"]').val();
+		$('#p1').css('color', 'red');
+		$('#m1').css('color', 'red');
+
+		document.getElementById('result').innerHTML = "enter user no and password here and then click that button";
+
+		if ((phone != "" ) && (pwd != "")){
+			document.getElementById('result').innerHTML = "loading...";
+			$.getJSON('/userstatus', {
+				id:1,
+				uid: $('input[name="phone"]').val(),
+				pwd: $('input[name="pwd"]').val(),
+			  },
+			  function(data) {
+				var status = data.json;
+				if (status=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (status=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+				}
+				else if (status=="false"){
+					$('#p1').css('color', 'red');
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "not yet booked";
+					return 0;
+				}
+				$('#p1').css('color', 'black');
+				$('#m1').css('color', 'black');
+				var output = '';
+				output += '<table class="table" border="1" style="float:left; width:30%"><tr><th>otp</th><th>user</th><th>owner</th><th>time</th><th>tickets</th></tr>';
+				for (var i in status){
+					output +='<tr id='+i+' style="cursor:pointer"><td>'+status[i]["otp"]+'</td><td>'+status[i]["uid"]+'</td><td>'+status[i]["oid"]+'</td><td>'+status[i]["time"]+'</td><td>'+status[i]["booked"]+'</td></tr>';					
+				}
+				output += '</table>';
+				document.getElementById('result').innerHTML = "Results...";
+				document.getElementById("table-responsive-xl").innerHTML = output;
+			});
+		}
+	  });
+	});
+});
+/////////////////////////////////////////admin status check
+$( document ).ready(function() {
+	$(function() {
+	  $('a#adminstatus').bind('click', function() {
+		oid = $('input[name="phone"]').val();
+		pwd = $('input[name="pwd"]').val();
+		$('#p1').css('color', 'red');
+		$('#m1').css('color', 'red');
+		document.getElementById('result').innerHTML = "enter admin no and password here and then click that button";
+
+		if ((phone != "" ) && (pwd != "")){
+			document.getElementById('result').innerHTML = "loading...";
+			$.getJSON('/adminstatus', {
+				oid: $('input[name="phone"]').val(),
+				pwd: $('input[name="pwd"]').val(),
+			  },
+			  function(data) {
+				var status = data.json;
+				if (status=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (status=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+				}
+				else if (status=="false"){
+					$('#p1').css('color', 'red');
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "not yet booked";
+					return 0;
+				}
+				$('#p1').css('color', 'black');
+				$('#m1').css('color', 'black');
+				var output = '';
+				output += '<table class="table" border="1" style="float:left; width:30%"><tr><th>otp</th><th>user</th><th>owner</th><th>time</th><th>tickets</th></tr>';
+				for (var i in status){
+					output +='<tr id='+i+' style="cursor:pointer"><td>'+status[i]["otp"]+'</td><td>'+status[i]["uid"]+'</td><td>'+status[i]["oid"]+'</td><td>'+status[i]["time"]+'</td><td>'+status[i]["booked"]+'</td></tr>';					
+				}
+				output += '</table>';
+				document.getElementById('result').innerHTML = "Results...";
+				document.getElementById("table-responsive-xl").innerHTML = output;
+			});
+		}
+	  });
+	});
+});
+/////////////////////////////////////////user details
+$( document ).ready(function() {
+	$(function() {
+	  $('a#userupdate').bind('click', function() {
+		$('#p1').css('color', 'black');
+		$('#m11').css('color', 'black');
+		oid = $('input[name="phone"]').val();
+		$('#m1').css('color', 'red');
+		document.getElementById('result').innerHTML = "enter admin no here and then click that button";
+
+		if (phone != "" ){
+			document.getElementById('result').innerHTML = "loading...";
+			$.getJSON('/userupdate', {
+				uid: $('input[name="phone"]').val(),
+			  },
+			  function(data) {
+				  var result = data.json;
+				  if (result=="false"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+				  }
+				  $('#p1').css('color', 'black');
+				$('#m1').css('color', 'black');
+				  var output = '';
+				  output += '<table class="table" border="1" style="float:left; width:30%"><tr><th>name</th><th>email</th><th>password</th><th>phone</th></tr>';
+				output +='<tr style="cursor:pointer"><td>'+result["name"]+'</td><td>'+result["email"]+'</td><td>'+result["password"]+'</td><td>'+result["phone"]+'</td></td></tr>';
+				  output += '</table>';
+				  document.getElementById('result').innerHTML = "Results...";
+				  document.getElementById("table-responsive-xl").innerHTML = output;
+			});
+		}
+	  });
+	});
+});
+/////////////////////////////////////////admin details
+$( document ).ready(function() {
+	$(function() {
+	  $('a#adminupdate').bind('click', function() {
+		oid = $('input[name="phone"]').val();
+		pwd= $('input[name="pwd"]').val(),
+		$('#p1').css('color', 'red');
+		$('#m1').css('color', 'red');
+		document.getElementById('result').innerHTML = "enter admin no and password here and then click that button";
+
+		if ((phone != "" ) && (pwd != "")){
+			document.getElementById('result').innerHTML = "loading..";
+			$.getJSON('/adminupdate', {
+				oid: $('input[name="phone"]').val(),
+				pwd: $('input[name="pwd"]').val(),
+			  },
+			  function(data) {
+				  var result = data.json;
+				  if (result=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (result=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+				}	
+				$('#p1').css('color', 'black');
+				$('#m1').css('color', 'black');
+				  var gmaps = 'https://maps.google.com/?q='+result["latitude"]+','+result["longitude"];
+				  var output = '';
+				  output += '<table class="table" border="1" style="float:left; width:30%"><tr><th>name</th><th>phone</th><th>password</th><th>email</th><th>chairscount</th><th>address</th></tr>';
+				output +='<tr style="cursor:pointer"><td>'+result["name"]+'</td><td>'+result["phone"]+'</td><td>'+result["password"]+'</td><td>'+result["email"]+'</td><td>'+result["chairscount"]+'</td><td><a href='+gmaps+' targer="_blank">location</a></td></tr>';
+				  output += '</table>';
+				  document.getElementById('result').innerHTML = "Results...";
+				  document.getElementById("table-responsive-xl").innerHTML = output;
+			});
+		}
+	  });
+	});
+});
+/////////////////////////////////////////user delete
+$( document ).ready(function() {
+	$(function() {
+	  $('a#deleteuser').bind('click', function() {
+		uid = $('input[name="phone"]').val();
+		pwd= $('input[name="pwd"]').val(),
+		$('#p1').css('color', 'red');
+		$('#m1').css('color', 'red');
+		document.getElementById('result').innerHTML = "enter admin no and password here and then click that button";
+
+		if ((phone != "" ) && (pwd != "")){
+			document.getElementById('result').innerHTML = "deleting...";
+			$.getJSON('/otpuser', {
+				uid: $('input[name="phone"]').val(),
+				pwd: $('input[name="pwd"]').val(),
+			  },
+			  function(data) {
+				  var result = data.json;
+				  if (result=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (result=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+					}
+					$('#p1').css('color', 'black');
+					$('#m11').css('color', 'black');
+				  document.getElementById('result').innerHTML = "otp send to your email";
+		
+				if (window.prompt("enter your otp", "Text")==result){
+				  $.getJSON('/deleteuser', {
+					uid: $('input[name="phone"]').val(),
+					function() {
+						document.getElementById('result').innerHTML = "your account is deleted";
+					}
+				});
+			}
+				else{
+					document.getElementById('result').innerHTML = "entered otp is wrong";
+				}
+			});
+		}
+	  });
+	});
+});
+/////////////////////////////////////////admin delete
+$( document ).ready(function() {
+	$(function() {
+	  $('a#deleteadmin').bind('click', function() {
+		oid = $('input[name="phone"]').val();
+		pwd= $('input[name="pwd"]').val(),
+		$('#p1').css('color', 'red');
+		$('#m1').css('color', 'red');
+		document.getElementById('result').innerHTML = "enter admin no and password here and then click that button";
+
+		if ((phone != "" ) && (pwd != "")){
+			document.getElementById('result').innerHTML = "deleting...";
+			$.getJSON('/otpadmin', {
+				oid: $('input[name="phone"]').val(),
+				pwd: $('input[name="pwd"]').val(),
+			  },
+			  function(data) {
+				  var result = data.json;
+				  if (result=="1"){
+					$('#p1').css('color', 'red');
+					document.getElementById('result').innerHTML = "Password wrong check it by user details";
+					return 0;
+				}
+				else if (result=="0"){
+					$('#m1').css('color', 'red');
+					document.getElementById('result').innerHTML = "entered mobile no not yet registered";
+					return 0;
+					}	
+					$('#p1').css('color', 'black');
+				$('#m11').css('color', 'black');
+				  document.getElementById('result').innerHTML = "otp send to your email";
+				
+				if (window.prompt("enter your otp", "Text")==result){
+				  $.getJSON('/deleteadmin', {
+					oid: $('input[name="phone"]').val(),
+					function(data) {
+						document.getElementById('result').innerHTML = "account deleted";
+					}
+				});
+			}
+					else{
+						document.getElementById('result').innerHTML = "entered otp is wrong";
+				}
+			});
+		}
+	  });
+	});
+});
+
+
+function w3_open() {
+	document.getElementById("main").style.marginLeft = "25%";
+	document.getElementById("mySidebar").style.width = "25%";
+	document.getElementById("mySidebar").style.display = "block";
+	document.getElementById("openNav").style.display = 'none';
+  }
+  function w3_close() {
+	document.getElementById("main").style.marginLeft = "0%";
+	document.getElementById("mySidebar").style.display = "none";
+	document.getElementById("openNav").style.display = "inline-block";
+  }
+
+</script>
+
+</head>
+<body>
+	<div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+		<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
+		<a class="navbar-brand" href="http://127.0.0.1:5000/userregister"  id = "userregister" title="create account"  id = "adminstatus" title="just enter mobile no and password then click this button to view your booking status">user register</a><br>
+		<a class="navbar-brand" href="http://127.0.0.1:5000/adminregister"  id = "adminregister" title="create account"  id = "adminstatus" title="just enter mobile no and password then click this button to view your booking status">admin register</a><br>
+		<a class="navbar-brand" href="#"  id = "userstatus" title="just enter mobile no and password then click this button to view your booking status"  id = "adminstatus" title="just enter mobile no and password then click this button to view your booking status">user booking status</a><br>
+		<a class="navbar-brand" href="#"  id = "adminstatus" title="just enter mobile no and password then click this button to view your booking status"  id = "adminstatus" title="just enter mobile no and password then click this button to view your booking status">admin booking status</a><br>
+		<a class="navbar-brand" href="#"  id="userupdate" title="just enter mobile and click this button to check your about">user details</a><br>
+		<a class="navbar-brand" href="#"  id="adminupdate" title="just enter mobile and click this button to check your about">admin details</a><br>
+		<a class="navbar-brand" href="#"  id = "deleteadmin" title="just enter mobile no and password then click this button to delete your account">delete admin</a><br>
+		<a class="navbar-brand" href = "#" id = "deleteuser" title="just enter mobile no and password thenclick this button to delete your account" >delete user</a> <br>
+	  </div>
+	  <div id="main">
+		<div class="w3-light">
+			<button id="openNav" class="w3-button w3-blue " title="click here" onclick="w3_open()">&#9776;Sallon Spot</button>
+		  </div>
+
+	<div class="container-fluid">
+		<table>
+			<h1 id ="adminlogin">check availability</h1>
+			<p id="o">otp is <p id="otp"></p></p>
+		<form>
+		<tr>
+		<td><label id="m1" >Mobile</label></td>
+		<td><input type="tel" id="phone" placeholder="phone" name="phone" required><br></td>
+		</tr>
+		<tr >
+		<td><label id="p1">Password</label></td>
+		<td><a id="jqphone"><input type="password" id="pwd" name="pwd" required></a><br></td>
+		</tr><br>
+		<tr >
+		<td><label>Time</label></td>
+		<td><a id="jqpwd"><input type=time step=1800 id = "time" name=time min="07:00" max="21:00" required></a><br></td>
+		</tr>
+		<tr >
+		<td><label>Seats</label></td>
+		<td><input type=number name="seats" name=seats value="seats" min=1 max={{max}} required><br></td>
+		</tr>
+		<tr>
+		<td></td>
+		<td><a href="loading-results" id="process_input"><button value='Check available' id="checkbtn">Check available</button></a></td>
+			</form>
+		</tr>
+			<p id=result></p>
+		</table>
+	</div>
+<p>________________________________________________________________________________________________________________________________________________________________________________________________</p>
+<div class="container-fluid">
+	<div id="table-responsive-xl">
+		{% block content %}
+		
+		{% endblock %}
+	</div>
+</div>
+</div>>
+</body>
+
+</html>
