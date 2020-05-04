@@ -1,0 +1,328 @@
+<html>
+    <head><title  id="title">Salon Spot</title>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <!-- Default theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <!-- Semantic UI theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/alertify.js/0.5.0/alertify.default.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+</head>
+<style>
+    .container-fluid {
+        background: #FFFFFF;
+        height: 45%;
+        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+      } 
+      .checkbtn1  {
+        font-family: "Roboto", sans-serif;
+        text-transform: uppercase;
+        outline: 0;
+        background: #4CAF50;
+        border: 0;
+        padding: 5px;
+        color: #FFFFFF;
+        font-size: 14px;
+        -webkit-transition: all 0.3 ease;
+        transition: all 0.3 ease;
+        cursor: pointer;
+        border-radius : 5px;
+      }
+      .checkbtn2  {
+        font-family: "Roboto", sans-serif;
+        text-transform: uppercase;
+        outline: 0;
+        background: #4CAF50;
+        border: 0;
+        padding: 5px;
+        color: #FFFFFF;
+        font-size: 14px;
+        -webkit-transition: all 0.3 ease;
+        transition: all 0.3 ease;
+        cursor: pointer;
+        border-radius : 5px;
+      }
+      .table-bordered{
+        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+        margin: 0 auto 100px;
+        width: 60%;
+        -webkit-transition: all 0.3 ease;
+        transition: all 0.3 ease;
+      }
+      #result{
+          color: red;
+      }
+      #otp{
+        color: red;
+       }
+      #o{
+         display: none;
+        }
+      #status{
+          margin-left: 40%;
+      }
+      .act{
+          float: left;
+          font-family: "Roboto", sans-serif;
+          text-transform: uppercase;
+          outline: 0;
+          background: #4CAF50;
+
+      }
+</style>
+<script>
+    function w3_open() {
+        document.getElementById("main").style.marginLeft = "25%";
+        document.getElementById("mySidebar").style.width = "25%";
+        document.getElementById("mySidebar").style.display = "block";
+        document.getElementById("openNav").style.display = 'none';
+      }
+      function w3_close() {
+        document.getElementById("main").style.marginLeft = "0%";
+        document.getElementById("mySidebar").style.display = "none";
+        document.getElementById("openNav").style.display = "inline-block";
+      }
+    </script>
+    <script>
+////////////////////////////////////////////////////////////////////////////////available
+var user = JSON.parse('{{ json_|safe }}');
+console.log(user);
+$( document ).ready(function() {
+    $(function() {
+      $('a#process_input').bind('click', function(global) {
+        time = $('input[name="time"]').val();
+        seats= $('input[name="seats"]').val();
+
+        if ((time != "" ) && (seats != "")){
+          var hours = ["07","08","09","10","11","12","13","14","15","16","17","18","19","20","21"];
+          var minutes = ["00","30"];
+          time_0 = time.split(":")[0];
+          time_1 = time.split(":")[1];
+          console.log(time_1,time_0);
+          var h = 0,m =0;
+          for (var i in hours){
+            if (hours[i] == String(time_0)){
+              console.log(time_0);
+              h = 1;
+              break;
+            }
+          }
+          for (var i in minutes){
+            if (minutes[i] == String(time_1)){
+              console.log(time_1);
+              m = 1;
+              break;
+            }
+          }
+        if ((h == 1 ) && (m == 1)){
+        document.getElementById('result').innerHTML = "loading...";
+        $(document).ready(function(){
+          alertify.set('notifier','position', 'top-center');
+          alertify.message('loading....');
+      });
+        $.getJSON('/background_process', {
+          uid: user["phone"],
+          time: $('input[name="time"]').val(),
+          seats: $('input[name="seats"]').val(),
+        }, function(data) {
+        document.getElementById('result').innerHTML = "Results...";
+        var array_ = data.json;
+////////////////////////////////   print table
+        var pars = array_;
+        var output = '';
+        output += '<table class="table-bordered" border="1" style="float:left"><tr><th>no</th><th style="width:40%;">details</th><th>book</th></tr>';
+        for (var i = 0; i < pars.length; i++)
+        {
+            ////////////////////////
+            output +='<tr id='+i+' style="cursor:pointer"><td>'+[i+1]+'</td><td>'+pars[i]['name']+',<br>'+pars[i]['mobile']+',<br>'+pars[i]['address']+'</td>';
+            /////////////////////////
+            output +='<td><a><button class = "checkbtn1" style="float:left; width:100%" id =book'+pars[i]['mobile']+' onclick=booking('+pars[i]['mobile']+')>Book</button></a></td>';
+            /////////////////////////
+        }
+        output += '</table>';
+        $('.table').html(output);
+        //////////////////////////////// end table
+            });
+        return false;
+          }
+          else{
+            $(document).ready(function(){
+              alertify.set('notifier','position', 'top-center');
+              alertify.warning('Time hours only between 7-21 and minutes 00 , 30....');
+          });
+          }
+        }
+      });
+    });
+});
+/////////////////////////////////////////////////////////////////////////////////booking
+function booking(val){
+    $( document ).ready(function() {
+        document.getElementById('result').innerHTML = "Booking...";
+    $.getJSON('/booking', {
+        oid: val,
+        uid: user["phone"],
+        time: $('input[name="time"]').val(),
+        seats: $('input[name="seats"]').val(),
+      }, function(data) {
+            if (data.json == 1){
+              $(document).ready(function(){
+                alertify.set('notifier','position', 'top-center');
+                alertify.message('Seats filled....');
+            });
+              return 0;
+            }
+            var otp = data.otp;
+            $('#o').text(otp);
+            $('#otp').text("you can verify by this code "+otp);
+            $(document).ready(function(){
+              alertify.set('notifier','position', 'top-center');
+              alertify.message('your one time password is'+otp);
+          });
+            var result = data.json;
+            document.getElementById('result').innerHTML = result;
+      });
+    });
+
+}
+/////////////////////////////////////////////////////////////////////////////////cancelling
+function cancel(seats,oid,otp,time){
+        $( document ).ready(function() {
+            console.log(otp);
+            document.getElementById('result').innerHTML = "Cancelling...";
+        $.getJSON('/cancelling', {
+            oid: oid,
+            uid: user["phone"],
+            time: time,
+            seats: seats,
+            otp : otp,
+        }, function(data) {
+            var result = data.json;
+            $('#o').text();
+            $(document).ready(function(){
+              alertify.set('notifier','position', 'top-center');
+              alertify.message(result);
+          });
+            document.getElementById('result').innerHTML = result;
+            window.location.replace("adminlogs");
+            location.reload(true);
+            });
+        });
+
+    }
+/////////////////////////////////////////////////////////////////////////////////status
+$( document ).ready(function() {
+	$(function() {
+	  $('a#status').bind('click', function() {
+			document.getElementById('result').innerHTML = "Loading...";
+			$.getJSON('/userstatus', {
+				uid: user["phone"],
+			  },
+			  function(data) {
+				var status = data.json;
+				if (status=="false"){
+					document.getElementById('result').innerHTML = "Not yet booked";
+					return 0;
+				}
+				var output = '';
+				output += '<table class="table-bordered" border="1" style="float:left;"><tr><th>otp</th><th>user</th><th>owner</th><th>time</th><th>tickets</th><th>cancel</th></tr>';
+					for (var i in status){
+						if (status[i]==null){
+							continue;
+						}
+          output +='<tr id='+i+' style="cursor:pointer"><td>'+status[i]["otp"]+'</td><td>'+status[i]["uid"]+'</td><td>'+status[i]["oid"]+'</td><td>'+status[i]["time"]+'</td><td>'+status[i]["booked"]+'</td>';		
+          output +='<td><a><button class = "checkbtn1" style="float:left; width:100%;" id =cancel'+status[i]["oid"]+' onclick=cancel('+status[i]["booked"]+','+status[i]["oid"]+','+status[i]["otp"]+',"'+status[i]["time"]+'")>cancel</button></a></td></tr>'
+ 
+				}
+				output += '</table>';
+				document.getElementById('result').innerHTML = "Results...";
+                $('.table').html(output);
+			});
+	    });
+	});
+});
+////////////////////////////////////////////////////////////////////////////////delete
+$( document ).ready(function() {
+	$(function() {
+	  $('a#delete').bind('click', function() {
+      alertify.confirm("Do you want delete?.",
+      function(){
+        alertify.success('Ok');
+      },
+      function(){
+        alertify.error('Cancel');
+      });
+
+      if (answer) {
+        document.getElementById('result').innerHTML = "Deleting...";
+        $.getJSON('/deleteuser', {
+          uid: user["phone"],
+          },
+          function(data) {
+          document.getElementById('result').innerHTML = "Deleted...";
+            if (data.json == 1){
+            $(document).ready(function(){
+              alertify.set('notifier','position', 'top-center');
+              alertify.message("deleted...");
+          });
+
+            }
+            window.location.replace("/");
+        });
+      }
+	  });
+	});
+});
+/////////////////////////////////////////////////////////////////////////////////
+</script>
+<body>
+    <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+		<button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
+        <tr><td><a href="#" id = "status" ><h3>Status</h3></a><br></td></tr>
+        <tr><td><a href="#" id = "delete"><h3>Delete</h3></a> <br></td></tr>
+        <tr><td><a href="userlogout" id = "logout"><h3>Logout</h3></a> <br></td></tr>
+    </div>
+    <div id="main">
+		<div class="w3-light">
+			<button id="openNav" class="w3-button w3-blue " title="click here" onclick="w3_open()">&#9776;Sallon Spot</button>
+		  </div>
+	<div class="container-fluid">
+		<table class="form">
+        <h1 id ="adminlogin">check availability</h1>
+        <p id="otp"></p>
+        <p id='o'></p>
+		<form>
+		<tr >
+		<td><label>Time</label></td>
+		<td><a id="jqpwd"><input class="form-control" step=1800 id = "time" name=time min="07:00" max="21:00"></a><br></td>
+		</tr>
+		<tr >
+		<td><label>Seats</label></td>
+		<td><input class="form-control" type="datetime" name="seats" name=seats placeholder="seats" min=1 max={{max}} required><br></td>
+		</tr>
+		<tr>
+		<td></td>
+        <td><a href="" id="process_input"><button value='Check available' class = "checkbtn1">Check available</button></a></td>
+		</form>
+		</tr>
+		<p id=result></p>
+		</table>
+    </div>
+    <div class="table"></div>
+    </div>
+</body>
+</html>

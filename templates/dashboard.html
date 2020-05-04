@@ -1,0 +1,155 @@
+<html>
+    <head><title id="title">dashboard</title>
+    <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+    <!-- Default theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+    <!-- Semantic UI theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+    <!-- Bootstrap theme -->
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/alertify.js/0.5.0/alertify.default.min.css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    
+    </head>
+    <style>
+          .dash1 {
+            background: #FFFFFF;
+            height: 100%;
+            box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+          }
+          
+    </style>
+    <script>
+        function w3_open() {
+            document.getElementById("main").style.marginLeft = "25%";
+            document.getElementById("mySidebar").style.width = "25%";
+            document.getElementById("mySidebar").style.display = "block";
+            document.getElementById("openNav").style.display = 'none';
+          }
+          function w3_close() {
+            document.getElementById("main").style.marginLeft = "0%";
+            document.getElementById("mySidebar").style.display = "none";
+            document.getElementById("openNav").style.display = "inline-block";
+          }
+    </script>
+    <script>
+        var admin = JSON.parse('{{ json_|safe }}');
+        console.log(admin);
+        $( document ).ready(function() {
+            var output = '';
+            //<td><a href="#" id='+i+' class="update">update</a></td>
+            output +='<table class="table table-striped">'
+            for(var i in admin){
+                if (i=="status"){
+                    continue;
+                }
+                output +='<tr><td>'+i+'</td><td>'+admin[i]+'</td></tr>'
+            }
+            output += '</table>';
+            $('.dash1').html(output);
+
+            });
+        /////////////////////////////////////////////////////status
+        $( document ).ready(function() {
+            $("#status").click(function(){
+                oid = admin["phone"]; 
+                $.getJSON('/adminstatus', {
+                    oid: admin["phone"] ,
+                    },
+                    function(data) {
+                        var result = data.result;
+                        if (result==false){
+                            $(document).ready(function(){
+                                alertify.set('notifier','position', 'top-center');
+                                alertify.message("No");
+                            });
+                        }
+                        var output = '';
+                        output += '<table class="table table-striped" ><tr><th>otp</th><th>user</th><th>time</th><th>tickets</th></tr>';
+                        for (var i in result){
+                            if (result[i]==null){
+                                continue;
+                            }
+                            output +='<tr id='+i+' style="cursor:pointer"><td>'+result[i]["otp"]+'</td><td>'+result[i]["uid"]+'</td><td>'+result[i]["oid"]+'</td><td>'+result[i]["time"]+'</td><td>'+result[i]["booked"]+'</td></tr>';					
+                        }
+                        output += '</table>';
+                        $('.dash1').html(output);
+                    });
+                    return false;
+                });
+            });
+        //////////////////////////////////////////////////////////
+        $( document ).ready(function() {
+            $("#details").click(function(){
+                    window.location.reload();
+                });
+            });
+        ///////////////////////////////////////////////////////////////////////////////
+        $( document ).ready(function() {
+            $("#delete").click(function(){
+
+                alertify.confirm("Do you want delete?.",
+                function(){
+                    alertify.success('Ok');
+                },
+                function(){
+                    alertify.error('Cancel');
+                });
+                if (answer) {
+                    //some code
+                    $.getJSON('/deleteadmin', {
+                        oid: admin["phone"] ,
+                        },
+                        function(data) {
+                            if (data.json == 1){
+                            $(document).ready(function(){
+                                alertify.set('notifier','position', 'top-center');
+                                alertify.message("deleted");
+                            });
+                            }
+                            else{
+                            $(document).ready(function(){
+                                alertify.set('notifier','position', 'top-center');
+                                alertify.message("your account dosen't exists...");
+                            });
+                            }
+                            window.location.replace("adminlogs");
+                        });
+                        return false;
+                    }
+                });
+            });
+
+    </script>
+    <body>
+        <div class="w3-sidebar w3-bar-block w3-card w3-animate-left" style="display:none" id="mySidebar">
+            <button class="w3-bar-item w3-button w3-large" onclick="w3_close()">Close &times;</button>
+            <tr><td><a href="#" id = "details" ><h3>Details</h3></a><br></td></tr>
+            <tr><td><a href="#" id = "status" ><h3>Status</h3></a><br></td></tr>
+            <tr><td><a href="#" id = "delete"><h3>Delete</h3></a> <br></td></tr>
+            <tr><td><a href="adminlogout" id = "logout"><h3>Logout</h3></a> <br></td></tr>
+        </div>
+        <div id="main">
+            <div class="w3-light">
+                <button id="openNav" class="w3-button w3-blue " title="click here" onclick="w3_open()">&#9776;Sallon Spot</button>
+            </div>
+        <div class="dash1" style="overflow-x:auto;">
+
+        </div>
+        </div>
+<script>
+
+</script>
+    </body>
+</html>

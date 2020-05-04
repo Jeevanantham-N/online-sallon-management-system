@@ -1,0 +1,245 @@
+<html>
+    <head>
+      <script src="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/alertify.min.js"></script>
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/alertify.min.css"/>
+      <!-- Default theme -->
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/default.min.css"/>
+      <!-- Semantic UI theme -->
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/semantic.min.css"/>
+      <!-- Bootstrap theme -->
+      <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/alertifyjs@1.13.1/build/css/themes/bootstrap.min.css"/>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/alertify.js/0.5.0/alertify.default.min.css"/>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    </head>
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Roboto:300);
+
+        #error{
+          color: red;
+        }
+        .form {
+          position: relative;
+          z-index: 1;
+          background: #FFFFFF;
+          max-width: 360px;
+          margin: 0 auto 100px;
+          padding: 45px;
+          text-align: center;
+          box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2), 0 5px 5px 0 rgba(0, 0, 0, 0.24);
+        }
+        .form input {
+          font-family: "Roboto", sans-serif;    
+          background: #f2f2f2;
+          width: 100%;
+          border: 0;
+          margin: 0 0 10px;
+          padding: 15px;
+          box-sizing: border-box;
+          font-size: 14px;
+        }
+        .form button {
+          font-family: "Roboto", sans-serif;
+          text-transform: uppercase;
+          outline: 0;
+          background: #4CAF50;
+          width: 50%;
+          border: 0;
+          padding: 15px;
+          color: #FFFFFF;
+          font-size: 14px;
+          -webkit-transition: all 0.3 ease;
+          transition: all 0.3 ease;
+          cursor: pointer;
+        }
+        #submit {
+          font-family: "Roboto", sans-serif;
+          text-transform: uppercase;
+          outline: 0;
+          background: #4CAF50;
+          width: 50%;
+          border: 0;
+          padding: 15px;
+          color: #FFFFFF;
+          font-size: 14px;
+          -webkit-transition: all 0.3 ease;
+          transition: all 0.3 ease;
+          cursor: pointer;
+        }
+        
+        .form .message {
+          margin: 15px 0 0;
+          color: #b3b3b3;
+          font-size: 12px;
+        }
+        .form .message a {
+          color: #4CAF50;
+          text-decoration: none;
+        }
+        .register-form {
+          display: none;
+        }
+        .container {
+          position: relative;
+          z-index: 1;
+          max-width: 300px;
+          margin: 0 auto;
+        }
+
+
+    </style>
+<script>
+  $(document).ready(function(){
+    alertify.set('notifier','position', 'top-center');
+    alertify.success('user Login ....');
+
+});     $(document).ready(function(){
+        $("#register").click(function(){
+            $(".login-form").css("display","none");
+            $("#user").css("display","none");
+            $(".register-form").css("display","block");
+            });
+        });
+      $(document).ready(function(){
+            $("#signin").click(function(){
+                $(".register-form").css("display","none");
+                $(".login-form").css("display","block");
+                $("#user").css("display","block");
+
+            });
+        });
+      $(document).ready(function(){
+            $("#createuser").click(function(){
+                var repwd=$('input[name="repwd"]').val();
+                var pwd=$('input[name="pwdd"]').val();
+                var name=$('#name').val();
+                var phone=$('#phonee').val();
+                var email=$('#email').val();
+
+                if(phone==''||name==''||pwd==""||repwd==""||email=='')
+                {
+                    $(document).ready(function(){
+                      alertify.set('notifier','position', 'top-center');
+                      alertify.warning('fill all the fields ....');
+                  });
+                }
+                else{
+                if ( pwd == repwd){
+                  $('#errorr').text("Registering...");
+                    $.getJSON('/userregister', {
+                        name: $('input[name="name"]').val(),
+                        pwd: $('input[name="pwdd"]').val(),
+                        phone: $('input[name="phonee"]').val(),
+                        email: $('input[name="email"]').val(),
+
+                    },
+                      function(data) {
+                        var result = data.result;
+                        if (result==0){
+                            $(document).ready(function(){
+                              alertify.set('notifier','position', 'top-center');
+                              alertify.warning('account already exists....');
+                          });
+                          }
+                        else{
+                            $(document).ready(function(){
+                              alertify.set('notifier','position', 'top-center');
+                              alertify.success('Registered....');
+                          });
+                            $(".register-form").css("display","none");
+                            $(".login-form").css("display","block");
+                            $('#errorr').text("Registered...");
+                        }
+                      });                 
+                }
+                else{
+                    $(document).ready(function(){
+                      alertify.set('notifier','position', 'top-center');
+                      alertify.warning('password mismatch....');
+                  });
+                }
+              }
+            });
+        });
+      $( document ).ready(function() {
+        $("#forgot").click(function(){
+          var phone =  window.prompt("enter your phone number and password send your mail", "");
+          if (phone == ""){
+            $(document).ready(function(){
+              alertify.set('notifier','position', 'top-center');
+              alertify.warning('phone number invalid....');
+          });
+          }  
+          else  {
+          $.getJSON('/forgotuser', {
+                phone: phone ,
+                },
+                function(data) {
+                  if (data.json == 1){
+                    $(document).ready(function(){
+                      alertify.set('notifier','position', 'top-center');
+                      alertify.warning('Password is send your mail...');
+                  });
+                  }
+                  else if(data.json == 0){
+                    $(document).ready(function(){
+                      alertify.set('notifier','position', 'top-center');
+                      alertify.warning('Account not yet created...');
+                  });
+                  }
+                });
+                return false;
+              }
+            });
+        });
+
+</script>
+<!-- window.prompt("enter your otp", "Text") -->
+<body>
+  <label>User</label>
+  <div class="login-page">
+    <div class="form">
+      <form class="login-form" action ="http://127.0.0.1:5000/userlogin" method="POST">
+      <a href="adminlogs" id="admin" style="float: right;margin-bottom:20%">go admin login</a>
+        <input type="tel" placeholder="phone" name="phone"  id="phone" required/>
+        <input type="password" placeholder="password" name="pwd" id="pwd" required/>
+        <input type="submit" id="submit"/>
+        <a href="" id="forgot"><p class="message" >Forgot password? </p></a><br><a id="register" href="#">Create an account</a>
+        <p id="error">{{ error }}</p>
+      </form>
+
+      <form class="register-form" method="dialog">
+            <table>
+            <tr>
+            <td><label for="name" id = "adminform">Name:</label></td>
+            <td><input type="text" id="name" placeholder="name" name="name" required><br><br></td>
+            </tr>
+            <tr>
+            <td><label for="phone"  id = "adminform">contact number:</label></td>
+            <td>  <input type="tel" id="phonee" name="phonee" pattern="[0-9]{10}" required><br><br></td>
+            </tr>
+            <tr>
+            <td> <label for="email"  id = "adminform">Email:</label></td>
+            <td>  <input type="email" id="email" name="email" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required><br><br></td>
+            </tr>
+           <tr>
+            <td><label>Password:</label></td>
+            <td><input type="password" id="pwd" name="pwdd" required><br><br></td>
+            </tr>
+            <tr>
+            <td> <label >Repeat Password:</label></td>
+            <td> <input type="password" id="repwd" name="repwd"required><br><br></td>
+            </tr>
+            <tr>
+            <td></td>
+            <td><a href="#" id="createuser"><button type="submit" id="createuser">create</button></a>
+            </td>
+            </tr>
+            </table>
+            <p style="color: red;" id="errorr"> {{ errorr }} </p>
+            <p class="message">Already registered? <a id="signin" href="#">Sign In</a></p>
+    </form>
+  </div>
+  </div>
+</body>
+</html>
